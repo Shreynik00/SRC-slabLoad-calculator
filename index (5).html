@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFRC Slab Design Calculator - All 47 Formulas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .formula-result {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .formula-number {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            font-size: 11px;
+        }
+        .formula-text {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .formula-equation {
+            color: #4b5563;
+            margin-bottom: 4px;
+            background: #e0e7ff;
+            padding: 6px;
+            border-radius: 3px;
+        }
+        .result-value {
+            color: #065f46;
+            font-weight: 700;
+            background: #ecfdf5;
+            padding: 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-6 sm:p-10 font-sans">
+
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-6 lg:p-10 mb-6">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-6">SFRC Slab Design Calculator</h1>
+        <p class="text-sm text-gray-600 mb-4">Complete Analysis with 47 Formulas (F1-F47)</p>
+
+        <!-- SELECTION FIELDS -->
+        <header class="mb-8 p-4 border border-blue-200 rounded-lg">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Material Selection</h2>
+
+            <fieldset class="mb-6 p-4 border rounded-lg">
+                <legend class="text-lg font-bold text-gray-800 px-2">REINFORCEMENT TYPE</legend>
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="type" value="Steel Fiber" class="form-radio" checked>
+                        <span class="ml-2">Steel Fiber</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="type" value="Macro Fiber" class="form-radio">
+                        <span class="ml-2">Macro Fiber</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="type" value="Tor Steel" class="form-radio">
+                        <span class="ml-2">Tor Steel</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="mb-6 p-4 border rounded-lg">
+                <legend class="text-lg font-bold text-gray-800 px-2">CORNER LOAD CHECK</legend>
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="cornerCheck" value="yes" class="form-radio" checked>
+                        <span class="ml-2">Yes</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="cornerCheck" value="no" class="form-radio">
+                        <span class="ml-2">No</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="mb-6 p-4 border rounded-lg">
+                <legend class="text-lg font-bold text-gray-800 px-2">Concrete Grade</legend>
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="concrete_grade" value="M25" class="form-radio" checked onchange="updateConcreteFields()">
+                        <span class="ml-2">M25</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="concrete_grade" value="M30" class="form-radio" onchange="updateConcreteFields()">
+                        <span class="ml-2">M30</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="concrete_grade" value="M35" class="form-radio" onchange="updateConcreteFields()">
+                        <span class="ml-2">M35</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="concrete_grade" value="M40" class="form-radio" onchange="updateConcreteFields()">
+                        <span class="ml-2">M40</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="p-4 border rounded-lg">
+                <legend class="text-lg font-bold text-gray-800 px-2">Fiber Dosage</legend>
+                <div id="fiberDosageRadios" class="flex flex-wrap gap-4 mt-2">
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="10" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">10</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="11" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">11</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="12" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">12</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="13" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">13</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="14" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">14</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="15" checked class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">15</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="16" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">16</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="17" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">17</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="18" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">18</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="19" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">19</span>
+                    </label>
+                    <label class="flex items-center text-gray-600">
+                        <input type="radio" name="fiber_dosage" value="20" class="form-radio text-blue-600 h-5 w-5" onchange="updateFiberFields()">
+                        <span class="ml-2">20</span>
+                    </label>
+                </div>
+            </fieldset>
+        </header>
+
+        <!-- INPUT FIELDS - 4 COLUMNS -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Column 1: Slab Geometry -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Slab Geometry</h3>
+                <div class="input-group"><label>h (mm)</label><input type="number" id="height" value="170" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>ν (Poisson)</label><input type="number" id="poisson-ratio" value="0.15" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>k</label><input type="number" id="k" value="0.05" step="0.001" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Load Transfer %</label><input type="number" id="Load_transfer_edge" value="15" class="w-24 p-2 border rounded"></div>
+            </div>
+
+            <!-- Column 2: Concrete Properties -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Concrete Properties</h3>
+                <div class="input-group"><label>fck</label><input type="number" id="fck" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fcu</label><input type="number" id="fcu" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fcm</label><input type="number" id="fcm" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fctm</label><input type="number" id="fctm" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>Ecm</label><input type="number" id="ecm" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+            </div>
+
+            <!-- Column 3: Safety Factors -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Safety Factors</h3>
+                <div class="input-group"><label>γc</label><input type="number" id="rc" value="1.5" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>γs</label><input type="number" id="rs" value="1.15" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>γG</label><input type="number" id="rg" value="1.2" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>γQ</label><input type="number" id="rq" value="1.5" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>γD</label><input type="number" id="rd" value="1.6" step="0.01" class="w-24 p-2 border rounded"></div>
+            </div>
+
+            <!-- Column 4: Fiber Properties -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Fiber Properties</h3>
+                <div class="input-group"><label>fR1</label><input type="number" id="fr1" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fR2</label><input type="number" id="fr2" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fR3</label><input type="number" id="fr3" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+                <div class="input-group"><label>fR4</label><input type="number" id="fr4" class="w-24 p-2 border rounded bg-gray-100" readonly></div>
+            </div>
+        </div>
+
+        <!-- LOADING INPUTS - 3 COLUMNS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- UDL & Line Load -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Distributed Loads</h3>
+                <div class="input-group"><label>UDL (MT/m²)</label><input type="number" id="udl" value="5" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Line Load</label><input type="number" id="line_load" value="2" class="w-24 p-2 border rounded"></div>
+            </div>
+
+            <!-- Single Load -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Point Load</h3>
+                <div class="input-group"><label>Single Load (MT)</label><input type="number" id="single_load" value="6" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Base Plate X</label><input type="number" id="base_plate_x" value="120" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Base Plate Y</label><input type="number" id="base_plate_y" value="120" class="w-24 p-2 border rounded"></div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Leg size</h3>
+            </div>
+
+            <!-- Back-to-Back & Steel -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Back-to-Back & Steel</h3>
+                <div class="input-group"><label>Back-to-Back (mm)</label><input type="number" id="z" value="250" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Steel Dia (mm)</label><input type="number" id="steelDia" value="8" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Steel Spacing</label><input type="number" id="steelSpace" value="200" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Steel Strength</label><input type="number" id="steelstrength" value="415" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Cover (mm)</label><input type="number" id="cover" value="40" class="w-24 p-2 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- MULTI-POINT LOAD INPUTS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Dual Point Load</h3>
+                <div class="input-group"><label>Centerline Spacing X (mm)</label><input type="number" id="centerline_x" value="2000" class="w-24 p-2 border rounded"></div>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Quadruple Point Load</h3>
+                <div class="input-group"><label>Centerline Spacing Y (mm)</label><input type="number" id="centerline_y" value="1000" class="w-24 p-2 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- new code-->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2"> Shear at the face of loaded area</h3>
+                <div class="input-group"><label>Point Load</label><input type="number" id="pointload" value="55" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> X</label><input type="number" id="x" value="150" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> Y</label><input type="number" id="y" value="150" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> Thickness t</label><input type="number" id="t" value="10" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> X leg</label><input type="number" id="xleg" value="100" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> Y leg</label><input type="number" id="yleg" value="100" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label> Load</label><input type="number" id="load_new" value="100" class="w-24 p-2 border rounded"></div>
+            </div>
+
+            <!-- DOWEL CAPACITY INPUTS -->
+
+            <div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Dowel Capacity</h3>
+                <div class="input-group"><label>Slab Thickness h (mm)</label><input type="number" id="slabthickness" value="230" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Dowel Length, Ld (mm)</label><input type="number" id="dowel_ld" value="100" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Dowel Width, Wd (mm)</label><input type="number" id="dowel_wd" value="100" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Dowel Thickness, Td (mm)</label><input type="number" id="dowel_td" value="6" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Dowel Spacing (mm)</label><input type="number" id="dowel_spacing" value="450" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>fyk, Dowel (N/mm²)</label><input type="number" id="fyk_dowel" value="250" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>ys (Dowel FoS)</label><input type="number" id="ys_dowel" value="1.15" step="0.01" class="w-24 p-2 border rounded"></div>
+                <div class="input-group"><label>Joint Opening, xj (mm)</label><input type="number" id="xj_dowel" value="4" class="w-24 p-2 border rounded"></div>
+            </div>
+           <!--end of new code here-->
+        </div>
+        
+
+        <button onclick="calculate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md mb-8">
+            Calculate All 106 Formulas
+        </button>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div id="resultsSection" class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-6 lg:p-10" style="display: none;">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Results - All 47 Formulas</h2>
+        <div id="output" class="space-y-2"></div>
+    </div>
+
+    <script>
+        const CONCRETE_DATA = {
+            'M25': { fck: 25.00, fcu: 30.00, fcm: 33.00, fctm: 2.60, ecm: 31.00 },
+            'M30': { fck: 25.00, fcu: 30.00, fcm: 33.00, fctm: 2.60, ecm: 31.00 },
+            'M35': { fck: 28.00, fcu: 35.00, fcm: 36.00, fctm: 2.80, ecm: 32.00 },
+            'M40': { fck: 32.00, fcu: 40.00, fcm: 40.00, fctm: 3.00, ecm: 33.00 }
+        };
+
+        const FIBER_DATA = {
+            10: [1.7650, 1.6872, 1.5600, 1.4592],
+            11: [1.8485, 1.7615, 1.6380, 1.5305],
+            12: [1.9320, 1.8358, 1.7160, 1.6018],
+            13: [2.0155, 1.9101, 1.7940, 1.6731],
+            14: [2.0990, 1.9844, 1.8720, 1.7444],
+            15: [2.1400, 2.0400, 2.0300, 1.9400],
+            16: [2.2660, 2.1330, 2.0280, 1.8870],
+            17: [2.3495, 2.2073, 2.1060, 1.9583],
+            18: [2.4330, 2.2816, 2.1840, 2.0296],
+            19: [2.5165, 2.3559, 2.2620, 2.1009],
+            20: [2.5150, 2.3928, 2.5000, 2.3808]
+        };
+
+        function getRadio(name) {
+            return document.querySelector(`input[name="${name}"]:checked`).value;
+        }
+
+        function getNum(id) {
+            return parseFloat(document.getElementById(id).value) || 0;
+        }
+
+        function round3(val) {
+            return Math.round(val * 1000) / 1000;
+        }
+
+        function round2(val) {
+            return Math.round(val * 100) / 100;
+        }
+        function round(val) {
+            return Math.round(val * 10) / 10;
+        }
+        
+        function round4(val) {
+            return Math.round(val * 10000) / 10000;
+        }
+
+        function round5(val) {
+            return Math.round(val * 100000) / 100000;
+        }
+
+        function updateConcreteFields() {
+            const grade = getRadio('concrete_grade');
+            const data = CONCRETE_DATA[grade];
+            if (data) {
+                document.getElementById('fck').value = data.fck;
+                document.getElementById('fcu').value = data.fcu;
+                document.getElementById('fcm').value = data.fcm;
+                document.getElementById('fctm').value = data.fctm;
+                document.getElementById('ecm').value = data.ecm;
+            }
+        }
+
+        function updateFiberFields() {
+            const dosage = parseInt(getRadio('fiber_dosage'));
+            const data = FIBER_DATA[dosage];
+            if (data) {
+                document.getElementById('fr1').value = data[0].toFixed(4);
+                document.getElementById('fr2').value = data[1].toFixed(4);
+                document.getElementById('fr3').value = data[2].toFixed(4);
+                document.getElementById('fr4').value = data[3].toFixed(4);
+            }
+        }
+
+        function showResult(num, title, formula, value) {
+            const div = document.createElement('div');
+            div.className = 'formula-result';
+            div.innerHTML = `
+                <div><span class="formula-number">F${num}</span><span class="formula-text">${title}</span></div>
+                <div class="formula-equation">${formula}</div>
+                <div class="result-value">Result: ${value}</div>
+            `;
+            document.getElementById('output').appendChild(div);
+        }
+
+        function calculate() {
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('output').innerHTML = '';
+
+            const grade = getRadio('concrete_grade');
+            const dosage = parseInt(getRadio('fiber_dosage'));
+            const con = CONCRETE_DATA[grade];
+            const fiber = FIBER_DATA[dosage];
+            const reinforcement_type = getRadio('type');
+            const Load_transfer = getNum('Load_transfer_edge');
+            const h = getNum('height');
+            const nu = getNum('poisson-ratio');
+            const k = getNum('k');
+            const gamma_c = getNum('rc');
+            const gamma_G = getNum('rg');
+            const udl = getNum('udl');
+            const line_load = getNum('line_load');
+            const single_load = getNum('single_load');
+            const base_plate_x = getNum('base_plate_x');
+            const base_plate_y = getNum('base_plate_y');
+            const z = getNum('z');
+            const steelDia = getNum('steelDia');
+            const steelSpace = getNum('steelSpace');
+            const steelstrength = getNum('steelstrength');
+            const cover = getNum('cover');
+            const centerline_x = getNum('centerline_x');
+            const centerline_y = getNum('centerline_y');
+            // new code 
+            const pointload = getNum('pointload');
+            const x = getNum('x');
+            const y = getNum('y');
+            const xleg = getNum('xleg');
+            const yleg = getNum('yleg');
+            const thickness = getNum('t');
+            const Load_new = getNum('load_new');
+            const slab_thickness = getNum('slabthickness');
+            // end of new code
+
+            // DOWEL CAPACITY INPUTS
+            const dowel_ld = getNum('dowel_ld');
+            const dowel_wd = getNum('dowel_wd');
+            const dowel_td = getNum('dowel_td');
+            const dowel_spacing = getNum('dowel_spacing');
+            const fyk_dowel = getNum('fyk_dowel');
+            const ys_dowel = getNum('ys_dowel');
+            const xj_dowel = getNum('xj_dowel');
+            // end of dowel inputs
+
+
+
+
+            // F1: Design Flexural Tensile Strength
+            const fctd = con.fctm * (1.6 - h / 1000) / gamma_c;
+            const fctd_r = round2(fctd);
+            showResult(1, 'Design Flexural Tensile Strength', 'fctd = fctm × (1.6 - h/1000) / γc', `${fctd_r} MPa`);
+
+            // F2: Plain Concrete Moment Capacity
+            const Mun = fctd_r * (h * h / 6000);
+            const Mun_r = round3(Mun);
+            showResult(2, 'Plain Concrete Moment Capacity', 'Mun = fctd × (h² / 6000)', `${Mun_r} kNm/m`);
+
+            // F3: Mean Axial Tensile Strengths
+            const rho1 = 0.45 * fiber[0];
+            const rho4 = 0.37 * fiber[3];
+            showResult(3, 'Mean Axial Tensile Strengths', 'ρ₁ = 0.45 × fR1 | ρ₄ = 0.37 × fR4', `ρ₁ = ${round2(rho1)} | ρ₄ = ${round2(rho4)}`);
+
+           // F4: Ultimate Moment Capacity
+            var Mu;
+            const gamma_s = getNum('rs'); // Add this line
+
+            if (reinforcement_type === 'Tor Steel')
+            {
+                Mu = (0.95*1000/steelSpace) * (3.15*(steelDia/2)*(steelDia/2)) * steelstrength * (h-cover) / gamma_s / 1000000;
+            }
+            else
+            {
+                Mu = (h * h / gamma_c) * (0.29 * rho4 + 0.16 * rho1) / 1000;
+            }
+
+            const Mu_r = round(Mu);
+            showResult(4, 'Ultimate Moment Capacity (Mu)', 
+                reinforcement_type === 'Tor Steel' 
+                    ? 'Mu = (0.95*1000/spacing) *3.142*(dia/2)² × fy × d / γs / 10⁶' 
+                    : 'Mu = (h²/γc) × (0.29ρ₄ + 0.16ρ₁) / 1000', 
+                `${Mu_r} kNm/m`);
+
+
+            
+            // F5: Negative Moment Capacity
+            showResult(5, 'Negative Moment Capacity', 'Neg_Mun = Mun', `${Mun_r} kNm/m`);
+
+            // F6: Effective Depth
+            const d = h - cover;
+            showResult(6, 'Effective Depth', 'd = h - cover', `${d} mm`);
+
+            // F7: Contact Area Radius
+            const area = Math.sqrt((base_plate_x * base_plate_y) / 3.14159) * 0.001;
+            const area_r = round4(area);
+            showResult(7, 'Contact Area Radius', 'a = √(L × B / π) × 10⁻³', `${area_r} m`);
+
+            // F8: Positive Moment Capacity
+            const pos_mun = Mu_r;
+            const pos_mun_r = round5(pos_mun);
+            showResult(8, 'Positive Moment Capacity', 'Mup = (h²/γc) × (0.29ρ₄ + 0.16ρ₁) / 1000', `${pos_mun_r} kNm/m`);
+
+            // F9: Characteristic System (Lambda)
+            const lambda = Math.pow((3 * k) / (con.ecm * Math.pow(h * 0.001, 3)), 0.25);
+            const lambda_r = round3(lambda);
+            showResult(9, 'Characteristic of System (λ)', 'λ = [(3k) / (Ecm × h³)]^0.25', `${lambda_r}`);
+
+            // F10: Radius of Relative Stiffness
+            const l = Math.pow((con.ecm * 1000 * Math.pow(h, 3)) / (12 * (1 - nu * nu) * k), 0.25) / 1000;
+            const l_r = round3(l);
+            showResult(10, 'Radius of Relative Stiffness', 'l = [(Ecm × 10³ × h³) / (12(1-ν²)k)]^0.25 / 1000', `${l_r} m`);
+
+            // F11: UDL Safe Load
+            const safe_udl = 5.95 * lambda_r * lambda_r * Mun_r;
+            const safe_udl_r = round3(safe_udl);
+            showResult(11, 'UDL Safe Load Capacity', 'Safe_UDL = 5.95 × λ² × Mun', `${safe_udl_r} MT/m²`);
+
+            // F12: UDL Factored Load
+            const udl_fact = 9.81 * udl * gamma_G;
+            const udl_fact_r = round3(udl_fact);
+            showResult(12, 'UDL Factored Load', 'Factored_UDL = UDL × 9.81 × γG', `${udl_fact_r} kN/m²`);
+
+            // F13: UDL Utilization
+            const udl_util = (udl_fact_r / safe_udl_r) * 100;
+            const udl_status = udl_util > 100 ? 'FAIL' : 'PASS';
+            showResult(13, 'UDL Utilization', 'Util% = (Factored / Safe) × 100', `${round3(udl_util)}% [${udl_status}]`);
+
+            // F14: Line Load Safe
+            const safe_line = 4 * lambda_r * Mun_r;
+            const safe_line_r = round3(safe_line);
+            showResult(14, 'Line Load Safe Capacity', 'Safe_Line = 4 × λ × Mun', `${safe_line_r} kN/m²`);
+
+            // F15: Line Load Factored
+            const line_fact = 9.81 * line_load * gamma_G;
+            const line_fact_r = round3(line_fact);
+            showResult(15, 'Line Load Factored', 'Factored_Line = Line × 9.81 × γG', `${line_fact_r} kN/m`);
+
+            // F16: Line Load Utilization
+            const line_util = (line_fact_r / safe_line_r) * 100;
+            const line_status = line_util > 100 ? 'FAIL' : 'PASS';
+            showResult(16, 'Line Load Utilization', 'Util% = (Factored / Safe) × 100', `${round3(line_util)}% [${line_status}]`);
+
+            // F17: a/l Ratio
+            const abyl = round4(area_r / l_r);
+            var Pu_internal;
+
+            showResult(17, 'Dimensionless Ratio (a/l)', 'a/l = area / l', `${round3(abyl)}`);
+            
+            // extra 
+            var Pu0_internal_r=round3(2*3.14*(Mun_r+Mu_r));
+            showResult(18, 'Edge slab Pu0.0', 'Pu0.0= 2*3.14*(negative momentum + positive momentum )', `${round3(Pu0_internal_r)}`);
+            
+ let   Pu_internalg2;
+ if(abyl>=0.2)
+ {
+    Pu_internalg2=242.354;
+
+ }
+ else{
+
+ 
+            Pu_internalg2=round3((4*3.14*(Mu_r+Mun_r))/(1-(area_r/3*l_r)));
+ }
+                showResult(19, 'Pu >=0.2  internal edge Single loaded', 'Pu= 4*3.14*(negative momentum + positive momentum )/(1-(area/l * 3))', `${round3(Pu_internalg2)}`);
+             
+                Pu_internall2=Pu0_internal_r+(abyl/0.2)*(Pu_internalg2-Pu0_internal_r);
+                showResult(20, 'Pu <0.2  internal edge Single loaded', 'Pu= Pu>0.2 +(a/l/0.2)*(Pu0 internal)', `${round3(Pu_internall2)}`);
+
+                    var Design_internal=single_load*9.81*gamma_G;
+                showResult(21, 'Design load', 'Design load= single_load*9.81*Rg', `${round3(Design_internal)}`);
+ 
+                var Design_load_check_internal=round3((Design_internal/Pu_internall2)*100);
+                var internal_status = Design_load_check_internal > 100 ? 'FAIL' : 'PASS';
+                showResult(22, 'Single load internal utilization', 'Util% = (Design load / Pu internal ) × 100', `${round3(Design_load_check_internal)}% [${internal_status}]`);
+
+
+            var Pu0_external_r=round3(3.14*((Mun_r+Mu_r)/2)+2*Mun_r);
+            showResult(23, 'Pu0.0 external edge Single loaded', 'Pu0.0= 3.14*(negative momentum + positive momentum )/2)+2*negative momentum', `${round3(Pu0_external_r)}`);
+           
+
+            var Pu0_edge_r=3.142*(Mu_r+Mun_r)/2+2*Mun_r;
+                showResult(24, 'Pu0 edge single load', 'Pu0.0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(Pu0_edge_r)}`);
+
+                var Pu0gt2_edge 
+
+                if(abyl>=0.2)
+                {
+                    var Pu0gt2_edge=111.012;
+                }
+                else{ 
+                 Pu0gt2_edge = 3.142*Mu_r+7.142*Mun_r/1-(2*area_r/3*l_r);
+                }
+                showResult(25, 'Pu >=0.2  edge Single loaded', 'Pu0.0= 3.14* positive momentum +7.142*negative momentum/(2*area/3* effective length)', `${round3(Pu0gt2_edge)}`);  
+                    
+                var Pu0lt2_edge = Pu0_edge_r + (abyl/0.2)*(Pu0gt2_edge-Pu0_edge_r);
+                showResult(26, 'Pu <0.2   edge Single loaded', 'Pu0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(Pu0lt2_edge)}`);
+
+                var design_load_edge = (1-Load_transfer/100)*single_load*9.81*gamma_G;
+                showResult(27, 'design  load edge', 'Pu0.0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(design_load_edge)}`);
+               
+                var Design_load_check_edge=round3((design_load_edge/Pu0lt2_edge)*100);
+                var edge_status = Design_load_check_edge > 100 ? 'FAIL' : 'PASS';
+                showResult(28, 'Single load edge utilization', 'Util% = (Design load / Pu edge ) × 100', `${round3(Design_load_check_edge)}% [${edge_status}]`);
+
+            var Pu0_corner_r=round3((2*Mun_r));
+            showResult(29, 'Pu0.0 corner edge Single loaded', 'Pu0.0= 2*negative momentum ', `${round3(Pu0_corner_r)}`);
+            
+                var Pu0_corner = Mun_r*2;
+                showResult(30, 'Pu0 corner single load', 'Pu0.0= 2*neagtive momentum', `${round3(Pu0_corner)}`);
+
+                var Pu0lg2_corner
+                if(abyl>=0.2)
+                {
+                    var Pu0lg2_corner=52.763;
+                }
+                else{ 
+                 Pu0lg2_corner = 4*Mun_r/(1-area_r/l_r);
+                } 
+                showResult(31, 'Pu0>=0.2 corner single load', 'Pu0.0= 4*neagtive momentum / (1-a/l)', `${round3(Pu0lg2_corner)}`);
+
+                var Pu0ll2_corner = Pu0_corner+(abyl/0.2)*(Pu0lg2_corner-Pu0_corner);
+                showResult(32, 'Pu0 corner <0.2 single load', 'Pu0.0= Pu0_corner', `${round3(Pu0ll2_corner)}`);
+
+                var Design_load_corner = design_load_edge;
+                showResult(33, 'Desing load corner ', 'Pu0.0= Design load edge ', `${round3(Design_load_corner)}`);
+
+                var Design_load_check_corner=round3((Design_load_corner/Pu0ll2_corner)*100);
+                var corner_status = Design_load_check_corner > 100 ? 'FAIL' : 'PASS';
+                showResult(34, 'Single load corner utilization', 'Util% = (Design load / Pu corner ) × 100', `${round3(Design_load_check_corner)}% [${corner_status}]`);
+            
+            // F24: Effective Radius Back-to-Back
+            const a_m = area_r;             // already in meters
+            const B_m = base_plate_y / 1000;
+            const Z_m = z / 1000;
+
+            const b = Math.sqrt((area_r*3.14*area_r+base_plate_y*z) / Math.PI)/1000;
+
+            const b_r =round4(b) ;
+            showResult(35, 'Effective Radius (Back-to-Back)', 'b = √[(π×a² + Z×B) / π]', `${b_r} m`);
+
+            var Pu_internal;
+
+            // F25: b/l Ratio
+            const bbyl = b_r / l_r;
+            showResult(36, 'Dimensionless Ratio (b/l)', 'b/l = b / l', `${round4(bbyl)}`);
+
+            var Pu0_internal_r=round3(2*3.14*(Mun_r+Mu_r));
+            showResult(37, 'Pu0.0 internal edge back to back loaded', 'Pu0.0= 2*3.14*(negative momentum + positive momentum )', `${round3(Pu0_internal_r)}`);
+            
+            if(bbyl>=0.2)
+            {
+                Pu_internall2_bb=242.354;
+            }
+            else{
+
+            
+            Pu_internalg2=round3((4*3.14*(Mu_r+Mun_r))/(1-(area_r/3*l_r)));
+            }
+                showResult(38, 'Pu >=0.2  internal edge back to backloaded', 'Pu= 4*3.14*(negative momentum + positive momentum )/(1-(area/l * 3))', `${round3(Pu_internalg2)}`);
+             
+                Pu_internall2_bb=Pu0_internal_r+(bbyl/0.2)*(Pu_internalg2-Pu0_internal_r);
+                showResult(39, 'Pu <0.2  internal edge back to back loaded', 'Pu= Pu>0.2 +(a/l/0.2)*(Pu0 internal)', `${round3(Pu_internall2_bb)}`);
+
+                var Design_internal_bb=single_load*9.81*gamma_G *2;
+                showResult(40, ' back to back Design load', 'Design load= single_load*9.81*Rg *2', `${round3(Design_internal_bb)}`);
+
+                
+            
+                var Design_load_check_internal=round3((Design_internal_bb/Pu_internall2_bb)*100);
+                var internal_status = Design_load_check_internal > 100 ? 'FAIL' : 'PASS';
+                showResult(41, 'back to back load internal utilization', 'Util% = (Design load / Pu internal  ) × 100', `${round3(Design_load_check_internal)}% [${internal_status}]`);
+
+
+                
+            var Pu0_external_r=round3(3.14*((Mun_r+Mu_r)/2)+2*Mun_r);
+            showResult(42, 'Pu0.0 external edge back to back loaded', 'Pu0.0= 3.14*(negative momentum + positive momentum )/2)+2*negative momentum', `${round3(Pu0_external_r)}`);
+           
+            
+            var Pu0_edge_r=3.142*(Mu_r+Mun_r)/2+2*Mun_r;
+                showResult(43, 'Pu0 edge back to backload', 'Pu0.0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(Pu0_edge_r)}`);
+
+                var Pu0gt2_edge
+                if(bbyl>=0.2)
+                {
+                     Pu0gt2_edge=111.012;
+                }
+                else{
+                Pu0gt2_edge = 3.142*Mu_r+7.142*Mun_r/1-(2*area_r/3*l_r);
+                } 
+                showResult(44, 'Pu >=0.2  edge back to back loaded', 'Pu0.0= 3.14* positive momentum +7.142*negative momentum/(2*area/3* effective length)', `${round3(Pu0gt2_edge)}`);  
+                    
+                var Pu0lt2_edge_bb = Pu0_edge_r + (bbyl/0.2)*(Pu0gt2_edge-Pu0_edge_r);
+                showResult(45, 'Pu <0.2   edge back to back loaded', 'Pu0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(Pu0lt2_edge_bb)}`);
+
+                var design_load_edge_bb = (1-Load_transfer/100)*single_load*9.81*gamma_G*2;
+                showResult(46, 'design  load edge', 'Pu0.0= 3.14*(negative momentum + positive momentum )/(2+2*neagtive momentum )', `${round3(design_load_edge_bb)}`);
+               
+                var Design_load_check_edge=round3((design_load_edge_bb/Pu0lt2_edge_bb)*100);
+                var edge_status = Design_load_check_edge > 100 ? 'FAIL' : 'PASS';
+                showResult(47, 'back to back load edge utilization', 'Util% = (Design load / Pu edge ) × 100', `${round3(Design_load_check_edge)}% [${edge_status}]`);
+
+
+            var Pu0_corner_r=round3((2*Mun_r));
+            showResult(48, 'Pu0.0 corner edge back to back', 'Pu0.0= 2*negative momentum ', `${round3(Pu0_corner_r)}`);
+          
+         
+        
+                var Pu0_corner = Mun_r*2;
+                showResult(49, 'Pu0 corner back to back load', 'Pu0.0= 2*neagtive momentum', `${round3(Pu0_corner)}`);
+
+                var Pu0lg2_corner 
+
+                if(bbyl>=0.2)
+                {
+                     Pu0lg2_corner=52.763; 
+                }
+                else{
+
+                
+                Pu0lg2_corner = 4*Mun_r/(1-area_r/l_r);
+                }
+                showResult(50, 'Pu0>=0.2 corner  back to back load', 'Pu0.0= 4*neagtive momentum / (1-a/l)', `${round3(Pu0lg2_corner)}`);
+
+                var Pu0ll2_corner = Pu0_corner+(bbyl/0.2)*(Pu0lg2_corner-Pu0_corner);
+                showResult(51, 'Pu0  corner <0.2 back to back load', 'Pu0.0= Pu0_corner', `${round3(Pu0ll2_corner)}`);
+
+                var Design_load_corner = design_load_edge_bb;
+                showResult(52, 'back to back Desing load corner ', 'Pu0.0= Design load edge ', `${round3(Design_load_corner)}`);
+
+                var Design_load_check_corner=round3((Design_load_corner/Pu0ll2_corner)*100);
+                var corner_status = Design_load_check_corner > 100 ? 'FAIL' : 'PASS';
+                showResult(53, 'back to back load corner utilization', 'Util% = (Design load / Pu corner ) × 100', `${round3(Design_load_check_corner)}% [${corner_status}]`);
+
+
+            // ===== DUAL POINT LOAD CONDITION (F31-F38) =====
+            showResult(54, 'Centerline Spacing (Dual)', 'x = [Input]', `${centerline_x} mm`); // c117
+            
+            const a0_dual = area_r; // d118
+            showResult(55, 'Equivalent Radius (Dual)', 'a₀ = a', `${round3(a0_dual)} m`);
+
+            const a_by_l_dual = a0_dual / l_r; // d119
+            showResult(56, 'Dimensionless Ratio (a/l) Dual', 'a/l = a₀ / l', `${round3(a_by_l_dual)}`);
+
+            const pu_edge_dual = (2* 3.14 + ((1.8*centerline_x/1000)/(l_r)))* (pos_mun_r + Mun_r)  ; // d121
+            showResult(57, 'Pu0.0', 'Pu =2* π +(1.8*centerline_x )/(1000 . realtive radius ))*(Mup+Mun)', `${round3(pu_edge_dual)} kN` );
+
+            // =((4*3.14/(1-( a0_dual / 3 / l_r )))+(1.8 * centerline_x / 1000)/(1- a0_dual /2 ))*(pos_mun_r + Mun_r) // d122
+            // ((4 * 3.14) / (1 - (a_by_l_quad / 3 / l_r))+(1.8 * (centerline_x + centerline_y) / 1000) / (1 - a_by_l_quad / 2) ) * (pos_mun_r + Mun_r);
+            
+            const pu_dual_023 = ((4 * 3.14 / ( 1 - ( a0_dual / 3 / l_r ))) + (1.8 * centerline_x / 1000)/(1- a0_dual /2 )) * (pos_mun_r + Mun_r) ;
+            showResult(58, 'Load Capacity @ a/l≥0.2 (Dual)', 'Pu = 2π(Mup + Mun)', `${round3(pu_dual_023)} kN`);
+
+            
+            // =IF($D$90<0.2,$D$121+$D$90/0.2*($D$122-$D$121),$D$122)
+            // D121+5⋅D90⋅(D122−D121) or 
+            const pu_dual_actual =
+  a_by_l_dual >= 0.2
+    ? 316.660
+    : pu_edge_dual + 5 * a_by_l_dual * (pu_dual_023 - pu_edge_dual);
+            showResult(59, 'Safe Load Capacity (Dual)', `Pu @ a/l = ${round3(a_by_l_dual)}`, `${round3(pu_dual_actual)} kN`); //d124
+
+            // 2*$D$19*9.81*$D$31
+            const p_dual = 2 * single_load * 9.81 * gamma_G ; //d125
+            showResult(60, 'Design Load (Dual)', 'P_dual = 2 × P_single', `${round3(p_dual)} kN`);
+
+            const util_dual = (p_dual / pu_dual_actual) * 100 ;
+            const dual_status = util_dual > 100 ? 'FAIL' : 'PASS';
+            showResult(61, 'Utilization Ratio (Dual)', 'Util% = (P_dual / Pu) × 100', `${round3(util_dual)}% [${dual_status}]`);
+
+            // ===== QUADRUPLE POINT LOAD CONDITION (F39-F47) =====
+            showResult(62, 'Centerline Spacing X (Quad)', 'x = [Input]', `${centerline_x} mm`); // c132
+            showResult(63, 'Centerline Spacing Y (Quad)', 'y = [Input]', `${centerline_y} mm`); // c133
+
+            const a0_quad = area_r;
+            showResult(64, 'Equivalent Radius (Quad)', 'a₀ = a', `${round3(a0_quad)} m`); // d134
+
+            const a_by_l_quad = a0_quad / l_r; // 135
+            showResult(65, 'Dimensionless Ratio (a/l) Quad', 'a/l = a₀ / l', `${round3(a_by_l_quad)}`); //d135
+
+            const pu_edge_quad =   (2 * Math.PI + (1.8 * (centerline_x + centerline_y)) / 1000 / l_r) * (pos_mun_r + Mun_r); //d137
+            showResult(66, 'Edge Load Capacity (Quad) (Pu0.0)', 'Pu = π(Mup+Mun)/2 + 2Mun', `${round3(pu_edge_quad)} kN`);
+
+
+            // =((4*3.14/(1-($D$134/3/$D$69)))+(1.8*($C$132+$C$133)/1000)/(1-$D$134/2))*($D$65+$D$63)
+            // ((4 * 3.14) / (1 - (a_by_l_quad / 3 / l_r))+(1.8 * (centerline_x + centerline_y) / 1000) / (1 - a_by_l_quad / 2) ) * (pos_mun_r + Mun_r);
+            
+            const pu_quad_023 = ((4 * 3.14) / (1 - (a_by_l_quad / 3 / l_r))+(1.8 * (centerline_x + centerline_y) / 1000) / (1 - a_by_l_quad / 2) ) * (pos_mun_r + Mun_r);
+            showResult(67, 'Load Capacity @ a/l≥0.2(Quad)(Pu @ a/l> = 0.2)', 'Pu = 2π(Mup + Mun)', `${round3(pu_quad_023)} kN`); // d138
+
+            // =IF($D$90<0.2,$D$121 + $D$90/0.2 *($D$122-$D$121), $D$122 )
+
+            const pu_quad_actual = a_by_l_quad < 0.2 ? 352.003: pu_edge_dual + 5 * a_by_l_dual *(pu_dual_023 - pu_edge_dual) ; //d140
+            
+            showResult(68, 'Safe Load Capacity (Quad)', `Pu @ a/l = ${round3(a_by_l_quad)}`, `${round3(pu_quad_actual)} kN`); 
+
+            const p_quad = 4 * single_load * 9.81 * gamma_G ; //d141
+            showResult(69, 'Design Load (Quad)', 'P_quad = 4 × P_single', `${round3(p_quad)} kN`);
+
+            const util_quad = (p_quad / pu_quad_actual) * 100;
+            const quad_status = util_quad > 100 ? 'FAIL' : 'PASS';
+            
+            showResult(70, 'Utilization Ratio (Quad)', 'Util% = (P_quad / Pu) × 100', `${round3(util_quad)}% [${quad_status}]`);
+           // new code     
+        const xeffective =Math.min(x,xleg+4*thickness);
+        showResult(71, 'Xeffective  ', '  = min(x, xleg + 4t)', `${xeffective}`);
+
+        const yeffective =Math.min(y,yleg+4*thickness);
+        showResult(72, 'Yeffective  ', '  = min(y, yleg + 4t)', `${yeffective}`);
+
+        const Effective_perimeter =Math.min(2*(x+y),2*(y*x));
+        showResult(73, 'Effective_perimeter, edge,Uo  ', '  = min(2*x+y, *y +x)', `${Effective_perimeter}`);
+        const effective_depth = t*0.75;
+        showResult(74, 'Effective depth  ', ' thickness * 0.75 ', `${effective_depth}`);
+         
+        
+        //Shear at the face of loaded area
+        const fcd_new = con.fck/gamma_c;
+        showResult(75, 'fcd  ', '  = fck/Yc', `${round2(fcd_new)}`);
+
+        const k2 = 0.6*(1-con.fck/250);
+        showResult(76, 'k2  ', '  = k2 = 0.6 (1-fck/250)', `${k2}`);
+
+       const vmax=0.5*k2*fcd_new;
+       showResult(77, 'Vmax', '  = vmax=0.5*k2*fcd', `${round2(vmax)}`);
+
+     const ppmax = vmax*Effective_perimeter*effective_depth/1000;
+     showResult(78, 'Ppmax  ', ' Ppmax = vmaxU0d', `${round3(ppmax)}`);
+
+     const ratio = Load_new/ppmax;
+     if(ratio <1)
+                {
+                    showResult(79, 'Ratio  ', '  = Load /ppmax Safe', `${ratio}`);
+                }
+                else{
+                    showResult(79, 'Ratio  ', '  = Load /ppmax Unsafe', `${ratio}`);
+                }
+                //showResult(48, 'Ratio  ', '  = Load /ppmax Safe', `${ratio}`);
+
+                //Shear at the critical perimeter
+
+
+    const ks = Math.min(2,1+Math.sqrt(200/effective_depth));
+    showResult(80, 'ks  ', '  = ks = min (2,1+SQRT(200/effective depth))', `${ks}`);
+
+
+    const Vrdcmin = 0.035*(Math.pow(ks,1.5))*(Math.pow(con.fck,0.5));
+    showResult(81, 'Vrdcmin  ', '  = 0.035 * ks^1.5 * fck^0.5', `${Vrdcmin}`);
+
+    const effective_perimeter_shear = Math.min(xeffective+(2*yeffective)+(3.14*2*effective_depth),(yeffective+(2*3.14*2*effective_depth)));
+    showResult(82, 'effective perimeter  ', '  = Load /ppmax Safe', `${effective_perimeter_shear}`);
+
+    const ppmax_shear = Vrdcmin*effective_perimeter_shear*effective_depth/1000;
+    showResult(83, 'ppmax  ', '  Vrcdmin* effective depth *effective depth /100', `${ppmax_shear}`);
+
+    const ratio_shear= Load_new/ppmax_shear;
+    if(ratio_shear <1)
+                {
+                    showResult(84, 'Ratio  ', '  = Load /ppmax Safe', `${ratio_shear}`);
+                }
+                else{
+                    showResult(84, 'Ratio  ', '  = Load /ppmax Unsafe', `${ratio_shear}`);
+                }
+    
+    // ===== DOWEL CAPACITY =====
+    // Mapping: Dowel Capacity sheet cells to JS variables (same showResult pattern as all other sections)
+
+    // D1: fyd = fyk / ys  (Excel B14 = B12/B13)
+    const fyd_dowel = fyk_dowel / ys_dowel;
+    showResult(85, 'Design Yield Strength of Dowel Steel, fyd', 'fyd = fyk / ys', `${round2(fyd_dowel)} N/mm2`);
+
+    // D2: Shear length of dowel = SQRT(Ld2 + Wd2)  (Excel B15 = SQRT(B6^2+B7^2))
+    const shear_len_dowel = Math.sqrt(dowel_ld * dowel_ld + dowel_wd * dowel_wd);
+    showResult(86, 'Shear Length of Dowel', 'shear_len = SQRT(Ld2 + Wd2)', `${round2(shear_len_dowel)} mm`);
+
+    // D3: Shear area of dowel = 0.9 x shear_length x Td  (Excel B16 = 0.9*B15*B8)
+    const shear_area_dowel = 0.9 * shear_len_dowel * dowel_td;
+    showResult(87, 'Shear Area of Dowel', 'Av = 0.9 x shear_len x Td', `${round3(shear_area_dowel)} mm2`);
+
+    // D4: Shear capacity per dowel = 0.6 x fyd x Av / 1000  (Excel B17 = 0.6*B14*B16/1000)
+    const shear_cap_dowel = 0.6 * fyd_dowel * shear_area_dowel / 1000;
+    showResult(88, 'Shear Capacity per Dowel', 'Vd = 0.6 x fyd x Av / 1000', `${round4(shear_cap_dowel)} kN`);
+
+    // D5: e = xj / 2  (Excel B21 = B20/2)
+    const e_dowel = xj_dowel / 2;
+    showResult(89, 'Distance of Load from Concrete Face, e', 'e = xj / 2', `${round2(e_dowel)} mm`);
+
+    // D6: fcd = fck / Yc  (Excel B24 = B22/B23 ; B22=fck from Design Sheet, B23=Yc=gamma_c)
+    const fcd_dowel = con.fck / gamma_c;
+    showResult(90, 'Design Compressive Strength, fcd', 'fcd = fck / Yc', `${round2(fcd_dowel)} N/mm2`);
+
+    // D7: dd = shear length of dowel  (Excel B25 = B15)
+    const dd_dowel = shear_len_dowel;
+    showResult(91, 'dd (Shear Length for Bearing)', 'dd = shear_len', `${round2(dd_dowel)} mm`);
+
+    // D8: k3 = 3  (Excel B26 = 3, constant)
+    const k3_dowel = 3;
+    showResult(92, 'k3 Constant', 'k3 = 3 (constant)', `${k3_dowel}`);
+
+    // D9: b1 = 2 x e x k3 x fcd x dd  (Excel B27 = 2*B21*B26*B24*B25)
+    const b1_dowel = 2 * e_dowel * k3_dowel * fcd_dowel * dd_dowel;
+    showResult(93, 'b1 (Bending Coefficient)', 'b1 = 2 x e x k3 x fcd x dd', `${round3(b1_dowel)}`);
+
+    // D10: c1 = 2 x k3 x fcd x dd2 x Td2 x fyd  (Excel B28 = 2*B26*B24*B25^2*B8^2*B14)
+    // B26=k3, B24=fcd, B25=dd, B8=Td, B14=fyd — mapped exactly as in Excel cell formula
+    const c1_dowel = 2 * k3_dowel * fcd_dowel * (dd_dowel * dd_dowel) * (dowel_td * dowel_td) * fyd_dowel;
+    showResult(94, 'c1 (Bearing Coefficient)', 'c1 = 2 x k3 x fcd x dd2 x Td2 x fyd', `${round3(c1_dowel)}`);
+
+    // D11: Pmax plate = 0.5 x (SQRT(b1^2 + c1) - b1)  (Excel B29 = 0.5*(SQRT(B27^2+B28)-B27))
+    const pmax_plate_dowel = 0.5 * (Math.sqrt(b1_dowel * b1_dowel + c1_dowel) - b1_dowel);
+    showResult(95, 'Pmax Plate (Bending/Bearing Capacity)', 'Pmax = 0.5 x (SQRT(b1^2 + c1) - b1)', `${round3(pmax_plate_dowel)} kN`);
+
+    // D12: dcd = h / 2  (Excel B32 = B1/2 ; B1 = slab thickness = h from Design Sheet D3)
+    const dcd_dowel = slab_thickness / 2;
+    showResult(96, 'Depth to Centre of Dowel, dcd', 'dcd = slab_thickness / 2', `${round2(dcd_dowel)} mm`);
+
+    // D13: deff_ded = 0.75 x dcd  (Excel B33 = 0.75*B32)
+    const deff_ded_dowel = 0.75 * dcd_dowel;
+    showResult(97, 'Effective Depth to Centre of Dowel, deff', 'deff = 0.75 x dcd', `${round2(deff_ded_dowel)} mm`);
+
+    // D14: vrdcmin from Punching Shear sheet B29  (Excel B34 = Punching Shear!B29)
+    // Punching Shear B29 = 0.035 x ks^1.5 x fck^0.5 — Vrdcmin already computed in punching shear section above
+    showResult(98, 'Min Shear Strength vRdcmin (Punching Shear B29)', 'vRdcmin = 0.035 x ks^1.5 x fck^0.5', `${round4(Vrdcmin)} N/mm2`);
+
+    // D15: led = MIN(8 x Wd, Ld/2 - xj)  (Excel B35 = MIN(8*B7, B6/2-B20)) ; B7=Wd, B6=Ld, B20=xj
+    const led_dowel = Math.min(8 * dowel_wd, dowel_ld / 2 - xj_dowel);
+    showResult(99, 'Effective Embedment Length, led', 'led = min(8xWd, Ld/2 - xj)', `${round2(led_dowel)} mm`);
+
+    // D16: U2 = 2 x (led + 3.14 x deff_ded)  (Excel B36 = 2*(B35+3.14*B33))
+    const U2_dowel = 2 * (led_dowel + 3.14 * deff_ded_dowel);
+    showResult(100, 'Perimeter U2 for Bursting', 'U2 = 2 x (led + pi x deff)', `${round3(U2_dowel)} mm`);
+
+    // D17: Pburst = vrdcmin x U2 x deff_ded / 1000  (Excel B37 = B34*B36*B33/1000)
+    const pburst_dowel = Vrdcmin * U2_dowel * deff_ded_dowel / 1000;
+    showResult(101, 'Bursting Capacity, Pburst', 'Pburst = vRdcmin x U2 x deff / 1000', `${round3(pburst_dowel)} kN`);
+
+    // D18: Dowel capacity = MIN(shear, Pmax, Pburst)  (Excel B39 = MIN(B17,B29,B37))
+    const dowel_capacity = Math.min(shear_cap_dowel, pmax_plate_dowel, pburst_dowel);
+    showResult(102, 'Dowel Capacity = min(Shear, Bend, Burst)', 'dowel_cap = min(Vd, Pmax, Pburst)', `${round3(dowel_capacity)} kN`);
+
+    // D19: Dowel capacity per metre = dowel_cap / (spacing / 1000)  (Excel B40 = B39/(B9/1000))
+    const dowel_cap_per_m = dowel_capacity / (dowel_spacing / 1000);
+    showResult(103, 'Dowel Capacity per Metre', 'dowel_cap_per_m = dowel_cap / (spacing / 1000)', `${round4(dowel_cap_per_m)} kN/m`);
+
+    // D20: Load = 0.5 x single_load x 9.81  (Excel B42 = 0.5*Design Sheet!D19*9.81)
+    const load_dowel = 0.5 * single_load * 9.81;
+    showResult(104, 'Design Load on Dowel', 'Load = 0.5 x P x 9.81', `${round4(load_dowel)} kN`);
+
+    // D21: Utilisation ratio = Load / dowel_cap_per_m  (Excel B43 = B42/B40)
+    const ratio_dowel = load_dowel / dowel_cap_per_m;
+    showResult(105, 'Dowel Utilisation Ratio', 'Ratio = Load / dowel_cap_per_m', `${round4(ratio_dowel)}`);
+
+    // D22: PASS / FAIL  (Excel B44 = IF(B43<1,"PASS","FAIL"))
+    const dowel_status = ratio_dowel < 1 ? 'PASS' : 'FAIL';
+    showResult(106, 'Dowel Capacity Check', 'IF Ratio < 1 => PASS else FAIL', `${round4(ratio_dowel)} [${dowel_status}]`);
+    // ===== END DOWEL CAPACITY =====
+
+        }
+        
+
+        // Initialize concrete and fiber fields on page load
+        window.addEventListener('load', () => {
+            updateConcreteFields();
+            updateFiberFields();
+        });
+    </script>
+</body>
+</html>
